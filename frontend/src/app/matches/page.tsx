@@ -1,0 +1,7 @@
+import Link from 'next/link';
+const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
+type Match = { id:number; competition:string; cutoff_time:string; home_odds:number; draw_odds:number; away_odds:number; home_team:{name:string}; away_team:{name:string} };
+export default async function MatchesPage() {
+  const matches: Match[] = await fetch(`${API}/api/matches`, { cache: 'no-store' }).then(r => r.json());
+  return <main className="mx-auto max-w-6xl p-8"><h1 className="text-3xl font-bold">졸라맨 축구 예측기</h1><p className="mt-2 text-slate-300">분석/시각화 전용 MVP입니다. 자동 구매 기능은 없습니다.</p><div className="mt-8 grid gap-4">{matches.map(m => <article key={m.id} className="rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow"><div className="text-sm text-emerald-300">{m.competition}</div><h2 className="mt-2 text-2xl font-semibold">{m.home_team.name} vs {m.away_team.name}</h2><p className="mt-1 text-slate-400">마감시간: {new Date(m.cutoff_time).toLocaleString('ko-KR')}</p><div className="mt-4 flex gap-3 text-sm"><span className="rounded bg-blue-900 px-3 py-1">홈 {m.home_odds}</span><span className="rounded bg-slate-800 px-3 py-1">무 {m.draw_odds}</span><span className="rounded bg-red-900 px-3 py-1">원정 {m.away_odds}</span></div><Link className="mt-5 inline-block rounded-xl bg-emerald-400 px-5 py-2 font-bold text-slate-950" href={`/matches/${m.id}`}>졸라맨 예측 보기</Link></article>)}</div></main>;
+}
